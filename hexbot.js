@@ -1,24 +1,30 @@
-var privateConfig = require('./config/private')
+'use strict'
 var util = require('util')
+var privateConfig = require('./config/private')
+var telegram = require('./telegram.js')
+var express = require('express')()
+const bodyParser = require('body-parser')
 
-// Telegram Bot
-var Telegram = require('./telegram.js')
-var telegram = new Telegram(privateConfig.telegramKey)
-function processMessages (messages) {
-  for (var i in messages) {
-    var m = messages[i].message
+telegram.send('[s] hello world')
+express.use(bodyParser.json());
+express.listen(privateConfig.httpListenerPort)
+console.log('listening on port ' + privateConfig.httpListenerPort)
 
-    if (m.from.id == privateConfig.telegramAdminId) {
-      if (m.text.startsWith('/send')) {
-        var text = m.text.substring(5)  
-        telegram.sendMessage(privateConfig.telegramAdminId, 'send:' + text)
-      } else {
-        telegram.sendMessage(privateConfig.telegramAdminId, 'ignored:' + m.text)
-      }
-    } else {
-      telegram.sendMessage(privateConfig.telegramAdminId, 'message from unknown source: ' + util.inspect(m))
-    }
+express.route('/send/:messageText').get(function (req, res, next) {
+  var messageText = req.params.messageText
+  telegram.send('[get] ' + messageText)
+  res.sendStatus(200)
+})
+
+express.route('/send').post(function (req, res, next) {
+  if (req.body && req.body.message && req.body.message.length > 0) {
+    var messageText = req.body.message
+    telegram.send('[post] ' + messageText)
+    res.sendStatus(200)
   }
-  setTimeout(function () { telegram.getMessages(processMessages) }, 2000)
-}
-telegram.getMessages(processMessages)
+})
+
+express.use(function (req, res, next) {
+  telegram.send('[r] ' + req.hostname + req.url)
+  res.sendStatus(404)
+})
