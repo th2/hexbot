@@ -1,0 +1,25 @@
+{
+  "name": "hexbot",
+  "version": "0.1.0",
+  "description": "hexbot",
+  "engines": {
+    "node": "12.x"
+  },
+  "main": "hexbot.js",
+  "scripts": {
+    "start": "node hexbot.js",
+    "test": "node hexbot.js"
+  },
+  "dependencies": {
+    "util": "^0.12.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/th2/hexbot"
+  },
+  "keywords": [
+    "node"
+  ],
+  "license": ""
+}
